@@ -1,0 +1,68 @@
+//Local Host
+###Get all Users
+GET http://localhost:8080/users
+
+###Get all Pets
+GET http://localhost:8080/pets
+
+###Get Single User
+GET http://localhost:8080/users/67900fb42bdfa0adfd0a9ccb
+###Get Single Pet
+GET http://localhost:8080/pets/67900fc32bdfa0adfd0a9ccf
+
+###Create user
+POST http://localhost:8080/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "firstName": "Cody",
+    "lastName": "Wandler",
+    "username": "CWandler",
+    "password": "Password4"
+}
+
+
+### Create Pet
+POST http://localhost:8080/pets HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Fido",
+    "type": "bird",
+    "breed": "Cockatoo",
+    "owner": "Cody",
+    "vet": "2 Rivers Clinic",
+    "diet": "1 cup bird seed",
+    "allergies": "latex"
+}
+
+###Update User
+PUT http://localhost:8080/users/679128236ef8671108421cef HTTP/1.1
+Content-Type: application/json
+
+{
+    "firstName": "Bunny",
+    "lastName": "Wandler",
+    "username": "CWandler",
+    "password": "4Password!"
+}
+
+###Update Pet
+PUT http://localhost:8080/pets/679127246ef8671108421cee HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Squeeks",
+    "type": "bird",
+    "breed": "Cockatoo",
+    "owner": "Cody",
+    "vet": "2 Rivers Clinic",
+    "diet": "1 cup bird seed",
+    "allergies": "latex"
+}
+
+###Delete User
+DELETE http://localhost:8080/users/679128236ef8671108421cef
+
+###Delete Pet
+DELETE http://localhost:8080/pets/6793cd50748e46a1f9b55f73

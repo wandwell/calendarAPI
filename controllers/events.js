@@ -1,6 +1,7 @@
 const { Event } = require('../models/events');
 const ObjectId = require('mongodb').ObjectId;
 
+
 const getSingle = async (req, res) => {
   //#swaggertags=['events']
   try {
@@ -76,7 +77,8 @@ const deleteEvent = async (req, res) => {
 // New function to get all events for the authenticated user
 const getAllForUser = async (req, res) => {
   try {
-    const userId = req.session.user._id;
+    const userId = req.session.user._id.toString();
+    console.log(userId);
     const events = await Event.find({ userId: userId });
     
     res.setHeader('Content-Type', 'application/json');

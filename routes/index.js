@@ -22,8 +22,16 @@ router.post('/login', (req, res, next) => {
                 return next(err);
             }
             req.session.user = user;
-            console.log('Local login successful, session set:', req.session); // Debugging log
-            return res.redirect('/');
+
+            // Prepare JSON response
+            const responseData = {
+                userId: user._id.toString(),
+                username: user.username,
+                favorites: user.favorites,
+                dislikes: user.dislikes
+            };
+
+            return res.json({ message: 'Logged in successfully', user: responseData }); // Return JSON response instead of redirecting
         });
     })(req, res, next);
 });

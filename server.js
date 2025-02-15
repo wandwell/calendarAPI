@@ -12,6 +12,12 @@ const app = express();
 
 const port = process.env.port || 3000;
 
+const corsOptions = {
+    origin: 'http://localhost:5173', // Update to your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true, // Allow credentials
+}
+
 app
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true })) // Add this line
@@ -25,17 +31,14 @@ app
     .use(passport.session())
 
     .use((req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader(
-            'Access-Control-Allow-Headers',
-            'Origin, X-Requested-With, Content-Type, Accept, 2-key'
-        );
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173'); // Update to your frontend URL
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
         next();
     })
 
-    .use(cors({ methods: ['GET', 'POST', 'PUT', 'DELETE', 'UPDATE', 'PATCH'], origin: '*' }))
-
+    .use(cors(corsOptions))
     .use('/', require('./routes'));
 
 passport.use(new LocalStrategy(async (username, password, done) => {
@@ -75,16 +78,23 @@ app.get('/', (req, res) => {
     }
 });
 
-app.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login',
-    failureFlash: false
-}), 
-(req, res) => {
-    console.log('User:', req.user);
+app.post('/login', passport.authenticate('local', { failureFlash: false }), (req, res) => {
     req.session.user = req.user;
-    console.log('Session after setting user:', req.session);
-    res.redirect('/');
+
+    // Prepare JSON response
+    const responseData = {
+        userId: req.user_id.toString(),
+        username: req.user.username,
+        favorites: req.user.favorites,
+        dislikes: req.user.dislikes
+    };
+
+    res.json({ message: 'Logged in successfully', user: responseData });
+}, (err, req, res, next) => {
+    if (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ message: 'Login failed', error: err.message });
+    }
 });
 
 process.on('uncaughtException', (err, origin) => {

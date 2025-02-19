@@ -12,16 +12,18 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-const corsOptions = {
-    origin: 'https://ontheplate.netlify.app', // Update to your frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true, // Allow credentials
-};
-
 const JWT_SECRET = 'your_jwt_secret_key';
 
+const corsOptions = {
+    origin: 'https://ontheplate.netlify.app', // Update to your frontend URL
+    methods: ['GET, POST, PUT, DELETE, OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'] // Add Authorization header to allowed headers
+};
+
+app.use(cors(corsOptions));
+
 app
-    .use(cors(corsOptions))
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true })) // Add this line
 

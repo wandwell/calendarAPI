@@ -24,7 +24,7 @@ const createEvent = async (req, res, next) => {
   //#swaggertags=['events']
   try {
       const event = new Event({
-          userId: req.body.userId, // Assign the userId from JWT
+          userId: req.params.id, // Assign the userId from JWT
           date: req.body.date,
           meal: req.body.meal,
           recipeId: req.body.recipeId,
@@ -44,8 +44,6 @@ const createEvent = async (req, res, next) => {
       next(error);
   }
 };
-
-
 
 const updateEvent = async (req, res) => {
   //#swaggertags=['events']

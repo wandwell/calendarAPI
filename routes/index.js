@@ -14,17 +14,20 @@ router.post('/login', (req, res, next) => {
     req.session.user = req.user;
     console.log("User after login:", req.user); // Logging user object
     console.log("Session after login:", req.session); // Logging session
-
-    const responseData = {
-        userId: req.user._id.toString(),
-        username: req.user.username,
-        favorites: req.user.favorites,
-        dislikes: req.user.dislikes
-    };
-
-    res.json({ message: 'Logged in successfully', user: responseData });
+    req.session.save((err) => { // Ensure session is saved
+        if (err) {
+            console.error("Error saving session:", err);
+            return next(err);
+        }
+        const responseData = {
+            userId: req.user._id.toString(),
+            username: req.user.username,
+            favorites: req.user.favorites,
+            dislikes: req.user.dislikes
+        };
+        res.json({ message: 'Logged in successfully', user: responseData });
+    });
 });
-
 
 router.get('/logout', function (req, res, next) {
     req.logout(function (err) {

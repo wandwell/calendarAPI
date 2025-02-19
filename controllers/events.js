@@ -35,12 +35,13 @@ const createEvent = async (req, res, next) => {
     if (response) {
       res.status(201).json(response);
     } else {
-      res.status(500).json('Some error occurred while creating the event.');
+      res.status(500).json({ message: 'Some error occurred while creating the event.' });
     }
   } catch (error) {
     next(error);
   }
 };
+
 
 const updateEvent = async (req, res) => {
   //#swaggertags=['events']

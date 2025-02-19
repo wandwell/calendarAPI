@@ -13,7 +13,7 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-const JWT_SECRET = 'your_jwt_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const corsOptions = {
     origin: 'https://ontheplate.netlify.app', // Update to your frontend URL

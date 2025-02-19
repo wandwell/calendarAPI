@@ -3,7 +3,7 @@ const ObjectId = require('mongodb').ObjectId;
 const bcrypt = require('bcryptjs');
 
 // JWT Secret key
-const JWT_SECRET = 'your_jwt_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const getSingle = async (req, res) => {
   try {

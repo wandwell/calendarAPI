@@ -2,7 +2,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = 'your_jwt_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.use('/users', require('./users'));
 router.use('/events', require('./events'));

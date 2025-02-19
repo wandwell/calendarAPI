@@ -1,14 +1,13 @@
 const { Event } = require('../models/events');
 const ObjectId = require('mongodb').ObjectId;
 
-
 const getSingle = async (req, res) => {
   //#swaggertags=['events']
   try {
     const eventId = new ObjectId(req.params.id);
     const event = await Event.findById(eventId);
     
-    if (event.userId.toString() !== req.session.user._id.toString()) {
+    if (event.userId.toString() !== req.user.userId) {
       return res.status(403).json({ message: 'Forbidden: You can only access your own events' });
     }
     
@@ -23,7 +22,7 @@ const createEvent = async (req, res, next) => {
   //#swaggertags=['events']
   try {
     const event = new Event({
-      userId: req.session.user._id, // Assign the userId from the session
+      userId: req.user.userId, // Assign the userId from JWT
       date: req.body.date,
       meal: req.body.meal,
       recipeId: req.body.recipeId,
@@ -36,7 +35,7 @@ const createEvent = async (req, res, next) => {
     if (response) {
       res.status(201).json(response);
     } else {
-      res.status(500).json('Some error occurred while updating the event.');
+      res.status(500).json('Some error occurred while creating the event.');
     }
   } catch (error) {
     next(error);
@@ -77,7 +76,7 @@ const deleteEvent = async (req, res) => {
 // New function to get all events for the authenticated user
 const getAllForUser = async (req, res) => {
   try {
-    const userId = req.session.user._id.toString();
+    const userId = req.user.userId;
     console.log(userId);
     const events = await Event.find({ userId: userId });
     

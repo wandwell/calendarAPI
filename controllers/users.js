@@ -2,12 +2,15 @@ const { User } = require('../models/users');
 const ObjectId = require('mongodb').ObjectId;
 const bcrypt = require('bcryptjs');
 
+// JWT Secret key
+const JWT_SECRET = 'your_jwt_secret_key';
+
 const getSingle = async (req, res) => {
   try {
     const userId = new ObjectId(req.params.id);
-    const lists = await User.findById(userId);
+    const user = await User.findById(userId);
     res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(lists);
+    res.status(200).json(user);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -28,7 +31,7 @@ const createUser = async (req, res, next) => {
     if (response) {
       res.status(201).json(response);
     } else {
-      res.status(500).json('Some error occurred while updating the user.');
+      res.status(500).json('Some error occurred while creating the user.');
     }
   } catch (error) {
     next(error);
@@ -57,32 +60,23 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const userId = new ObjectId(req.params.id);
 
-  req.logout((err) => {
-    if (err) {
-      return res.status(500).json('Some error occurred while logging out the user.');
+  try {
+    const response = await User.findByIdAndDelete(userId);
+    if (response) {
+      res.status(204).send();
+    } else {
+      res.status(500).json('Some error occurred while deleting the user.');
     }
-
-    req.session.destroy(async (err) => {
-      if (err) {
-        return res.status(500).json('Some error occurred while destroying the session.');
-      }
-
-      const response = await User.findByIdAndDelete(userId);
-
-      if (response) {
-        res.status(204).send();
-      } else {
-        res.status(500).json('Some error occurred while deleting the user.');
-      }
-    });
-  });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 const updateFavorites = async (req, res) => {
   const userId = new ObjectId(req.params.id);
   const { favorites } = req.body;
 
-  console.log('Received favorites:', favorites); // Log the received dislikes array
+  console.log('Received favorites:', favorites);
 
   if (!Array.isArray(favorites)) {
     return res.status(400).json({ message: 'Favorites must be an array' });
@@ -108,7 +102,7 @@ const updateDislikes = async (req, res) => {
   const userId = new ObjectId(req.params.id);
   const { dislikes } = req.body;
 
-  console.log('Received dislikes:', dislikes); // Log the received dislikes array
+  console.log('Received dislikes:', dislikes);
 
   if (!Array.isArray(dislikes)) {
     return res.status(400).json({ message: 'Dislikes must be an array' });
@@ -129,7 +123,6 @@ const updateDislikes = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
-
 
 module.exports = {
   getSingle,

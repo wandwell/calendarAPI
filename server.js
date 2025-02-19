@@ -1,40 +1,29 @@
 const express = require('express');
 const connectDB = require('./data/database');
 const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const session = require('express-session');
 const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
 const { User } = require('./models/users');
 const bcrypt = require('bcryptjs');
-const MongoStore = require('connect-mongo');
 
 const app = express();
 
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 
 const corsOptions = {
     origin: 'https://ontheplate.netlify.app', // Update to your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true, // Allow credentials
-}
+};
+
+const JWT_SECRET = 'your_jwt_secret_key';
 
 app
     .use(cors(corsOptions))
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true })) // Add this line
-
-    .use(session({
-        secret: 'secret',
-        resave: false,
-        saveUninitialized: false,
-        store: MongoStore.create({
-            mongoUrl: process.env.MONGODB_URI
-        }),
-        cookie: { secure: true, httpOnly: true, sameSite: 'None' }
-    }))
-    .use(passport.initialize())
-    .use(passport.session())
 
     .use((req, res, next) => {
         res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -42,23 +31,19 @@ app
         res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
         next();
     })
-    app.use((req, res, next) => {
+    .use((req, res, next) => {
         console.log("Incoming request:", req.method, req.url);
         console.log("Request headers:", req.headers);
-        console.log("Session data:", req.session);
         next();
-    });
-    
-    app.use((req, res, next) => {
+    })
+    .use((req, res, next) => {
         res.on('finish', () => {
             console.log('Outgoing response headers:', res.getHeaders());
         });
         next();
     });
 
-    app.disable('x-powered-by');
-    
-    app.use('/', require('./routes'));
+app.disable('x-powered-by');
 
 passport.use(new LocalStrategy(async (username, password, done) => {
     try {
@@ -76,42 +61,45 @@ passport.use(new LocalStrategy(async (username, password, done) => {
     }
 }));
 
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
+const generateToken = (user) => {
+    return jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+};
 
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (err) {
-        done(err);
-    }
-});
+const authenticateToken = (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.sendStatus(401);
 
-app.get('/', (req, res) => {
-    if (req.session.user) {
-        res.send(`Logged in as ${req.session.user.username}`);
-    } else {
-        res.send('Logged Out');
-    }
-});
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+};
 
 app.post('/login', passport.authenticate('local', { failureFlash: false }), (req, res) => {
-    req.session.user = req.user;
-    console.log("User after login:", req.user); // Logging user object
-    console.log("Session after login:", req.session); // Logging session
-
+    const token = generateToken(req.user);
     const responseData = {
         userId: req.user._id.toString(),
         username: req.user.username,
         favorites: req.user.favorites,
-        dislikes: req.user.dislikes
+        dislikes: req.user.dislikes,
+        token: token
     };
 
     res.json({ message: 'Logged in successfully', user: responseData });
 });
 
+app.get('/events', authenticateToken, (req, res) => {
+    // Example protected route
+    Event.find({ userId: req.user.userId }, (err, events) => {
+        if (err) return res.status(500).json({ message: err.message });
+        res.json(events);
+    });
+});
+
+app.get('/', (req, res) => {
+    res.send('Hello, world!');
+});
 
 process.on('uncaughtException', (err, origin) => {
     console.error(`Caught Exception: ${err}\nException Origin: ${origin}`);

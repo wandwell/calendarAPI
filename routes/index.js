@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
+
 const JWT_SECRET = 'your_jwt_secret_key';
 
 router.use('/', require('./swagger'));
@@ -14,7 +15,7 @@ const generateToken = (user) => {
 router.post('/login', (req, res, next) => {
     console.log("Login route hit with data:", req.body);
     next();
-}, passport.authenticate('local', { failureFlash: false }), (req, res) => {
+}, passport.authenticate('local', { session: false, failureFlash: false }), (req, res) => { // Set session to false
     const token = generateToken(req.user);
     console.log("User after login:", req.user);
 
@@ -23,14 +24,14 @@ router.post('/login', (req, res, next) => {
         username: req.user.username,
         favorites: req.user.favorites,
         dislikes: req.user.dislikes,
-        token: token
+        token: token // Include the JWT token in the response
     };
     res.json({ message: 'Logged in successfully', user: responseData });
 });
 
 // Add error handling middleware
 router.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error("Error handling middleware:", err.stack);
     res.status(500).json({ message: 'An internal server error occurred' });
 });
 

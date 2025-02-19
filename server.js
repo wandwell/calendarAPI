@@ -7,6 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
 const { User } = require('./models/users');
 const bcrypt = require('bcryptjs');
+const { Event } = require('./models/events'); // Add Event model
 
 const app = express();
 
@@ -16,7 +17,7 @@ const JWT_SECRET = 'your_jwt_secret_key';
 
 const corsOptions = {
     origin: 'https://ontheplate.netlify.app', // Update to your frontend URL
-    methods: ['GET, POST, PUT, DELETE, OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'] // Add Authorization header to allowed headers
 };
@@ -25,7 +26,7 @@ app.use(cors(corsOptions));
 
 app
     .use(bodyParser.json())
-    .use(bodyParser.urlencoded({ extended: true })) // Add this line
+    .use(bodyParser.urlencoded({ extended: true }))
 
     .use((req, res, next) => {
         res.setHeader('Cache-Control', 'public, max-age=3600');
@@ -78,7 +79,7 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-app.post('/login', passport.authenticate('local', { failureFlash: false }), (req, res) => {
+app.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
     const token = generateToken(req.user);
     const responseData = {
         userId: req.user._id.toString(),
@@ -92,7 +93,6 @@ app.post('/login', passport.authenticate('local', { failureFlash: false }), (req
 });
 
 app.get('/events', authenticateToken, (req, res) => {
-    // Example protected route
     Event.find({ userId: req.user.userId }, (err, events) => {
         if (err) return res.status(500).json({ message: err.message });
         res.json(events);
@@ -101,6 +101,12 @@ app.get('/events', authenticateToken, (req, res) => {
 
 app.get('/', (req, res) => {
     res.send('Hello, world!');
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error("Error handling middleware:", err.stack);
+    res.status(500).json({ message: 'An internal server error occurred' });
 });
 
 process.on('uncaughtException', (err, origin) => {

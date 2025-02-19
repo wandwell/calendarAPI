@@ -37,20 +37,21 @@ app
     .use(passport.session())
 
     .use((req, res, next) => {
-    console.log("Incoming request:", req.method, req.url);
-    console.log("Request headers:", req.headers); // Log request headers
-    console.log("Session data:", req.session);
-    next();
-})
-
-    .use((req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin', 'https://ontheplate.netlify.app'); // No trailing slash
-        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
         next();
     })
-    .use('/', require('./routes'));
+    .use((req, res, next) => {
+        console.log("Incoming request:", req.method, req.url);
+        console.log("Request headers:", req.headers); // Log request headers
+        console.log("Session data:", req.session);
+        next();
+    })
+
+    app.disable('x-powered-by');
+    
+    app.use('/', require('./routes'));
 
 passport.use(new LocalStrategy(async (username, password, done) => {
     try {

@@ -86,6 +86,12 @@ const updateFavorites = async (req, res) => {
   const userId = new ObjectId(req.params.id);
   const { favorites } = req.body;
 
+  console.log('Received favorites:', favorites); // Log the received dislikes array
+
+  if (!Array.isArray(favorites)) {
+    return res.status(400).json({ message: 'Favorites must be an array' });
+  }
+
   try {
     const response = await User.findByIdAndUpdate(
       userId,
@@ -95,7 +101,7 @@ const updateFavorites = async (req, res) => {
     if (response) {
       res.status(200).json(response);
     } else {
-      res.status(500).json('Some error occurred while updating favorites.');
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -106,6 +112,12 @@ const updateDislikes = async (req, res) => {
   const userId = new ObjectId(req.params.id);
   const { dislikes } = req.body;
 
+  console.log('Received dislikes:', dislikes); // Log the received dislikes array
+
+  if (!Array.isArray(dislikes)) {
+    return res.status(400).json({ message: 'Dislikes must be an array' });
+  }
+
   try {
     const response = await User.findByIdAndUpdate(
       userId,
@@ -115,12 +127,13 @@ const updateDislikes = async (req, res) => {
     if (response) {
       res.status(200).json(response);
     } else {
-      res.status(500).json('Some error occurred while updating dislikes.');
+      res.status(404).json({ message: 'User not found' });
     }
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 };
+
 
 module.exports = {
   getSingle,
@@ -128,5 +141,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateFavorites,
-  updateDislikes,
+  updateDislikes
 };

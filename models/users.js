@@ -17,8 +17,8 @@ const userSchema = new Schema({
             message: props => `${props.value} is not a valid password. Password must include an uppercase letter, a lowercase letter, and a number.`
         }
     },
-    favorites: [String],
-    dislikes: [String]
+    favorites:[{ recipeId: String, title: String }],
+    dislikes: [String],
 }, { collection: 'users' });
 
 const User = model('User', userSchema);

@@ -5,10 +5,9 @@
     "description": "Project 2 API",
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "calendarapi-oaej.onrender.com",
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "paths": {

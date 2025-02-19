@@ -76,7 +76,7 @@ const deleteEvent = async (req, res) => {
 // New function to get all events for the authenticated user
 const getAllForUser = async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const userId = req.params.id;
     console.log(userId);
     const events = await Event.find({ userId: userId });
     

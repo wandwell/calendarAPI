@@ -3,7 +3,7 @@ const eventsController = require('../controllers/events.js');
 const { authenticateToken } = require('../middleware/authMiddleware.js');
 
 // Route to get all events for the authenticated user
-router.get('/', authenticateToken, eventsController.getAllForUser);
+router.get('/:id', authenticateToken, eventsController.getAllForUser);
 
 // Route to create a new event
 router.post('/', authenticateToken, eventsController.createEvent);

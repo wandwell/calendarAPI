@@ -17,8 +17,6 @@ const createUser = async (req, res, next) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const user = new User({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
       username: req.body.username,
       password: hashedPassword,
       favorites: req.body.favorites,
@@ -41,8 +39,6 @@ const updateUser = async (req, res) => {
   const userId = new ObjectId(req.params.id);
   const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const user = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
     username: req.body.username,
     password: hashedPassword,
     favorites: req.body.favorites,

@@ -1,11 +1,13 @@
 const { User } = require('../models/users');
 
 const isAuthenticated = (req, res, next) => {
+    console.log("Session in isAuthenticated middleware:", req.session);
     if (req.session.user === undefined) {
         return res.status(401).json('You do not have access');
     }
     next();
 };
+
 
 const isUser = async (req, res, next) => {
     if (!req.session.user) {

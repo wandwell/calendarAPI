@@ -81,22 +81,18 @@ app.get('/', (req, res) => {
 
 app.post('/login', passport.authenticate('local', { failureFlash: false }), (req, res) => {
     req.session.user = req.user;
+    console.log("Session after login:", req.session);
 
-    // Prepare JSON response
     const responseData = {
-        userId: req.user_id.toString(),
+        userId: req.user._id.toString(), // Ensure correct property
         username: req.user.username,
         favorites: req.user.favorites,
         dislikes: req.user.dislikes
     };
 
     res.json({ message: 'Logged in successfully', user: responseData });
-}, (err, req, res, next) => {
-    if (err) {
-        console.error('Login error:', err);
-        res.status(500).json({ message: 'Login failed', error: err.message });
-    }
 });
+
 
 process.on('uncaughtException', (err, origin) => {
     console.error(`Caught Exception: ${err}\nException Origin: ${origin}`);

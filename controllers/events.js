@@ -19,29 +19,32 @@ const getSingle = async (req, res) => {
 };
 
 const createEvent = async (req, res, next) => {
+  console.log('Received POST request to /events');
+  console.log('Request body:', req.body);
   //#swaggertags=['events']
   try {
-    const event = new Event({
-      userId: req.body.userId, // Assign the userId from JWT
-      date: req.body.date,
-      meal: req.body.meal,
-      recipeId: req.body.recipeId,
-      name: req.body.name,
-      servings: req.body.servings
-    });
+      const event = new Event({
+          userId: req.body.userId, // Assign the userId from JWT
+          date: req.body.date,
+          meal: req.body.meal,
+          recipeId: req.body.recipeId,
+          name: req.body.name,
+          servings: req.body.servings
+      });
 
-    const response = await event.save();
+      const response = await event.save();
 
-    if (response) {
-      res.status(201).json(response);
-    } else {
-      res.status(500).json({ message: 'Some error occurred while creating the event.' });
-    }
+      if (response) {
+          res.status(201).json(response);
+      } else {
+          res.status(500).json({ message: 'Some error occurred while creating the event.' });
+      }
   } catch (error) {
-    res.status(500).json({ message: 'Internal Server Error' });
-    next(error);
+      res.status(500).json({ message: 'Internal Server Error' });
+      next(error);
   }
 };
+
 
 
 const updateEvent = async (req, res) => {

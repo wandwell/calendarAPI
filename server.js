@@ -19,6 +19,7 @@ const corsOptions = {
 }
 
 app
+    .use(cors(corsOptions))
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true })) // Add this line
 
@@ -38,8 +39,6 @@ app
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         next();
     })
-
-    .use(cors(corsOptions))
     .use('/', require('./routes'));
 
 passport.use(new LocalStrategy(async (username, password, done) => {

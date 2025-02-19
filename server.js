@@ -42,12 +42,19 @@ app
         res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
         next();
     })
-    .use((req, res, next) => {
+    app.use((req, res, next) => {
         console.log("Incoming request:", req.method, req.url);
-        console.log("Request headers:", req.headers); // Log request headers
+        console.log("Request headers:", req.headers);
         console.log("Session data:", req.session);
         next();
-    })
+    });
+    
+    app.use((req, res, next) => {
+        res.on('finish', () => {
+            console.log('Outgoing response headers:', res.getHeaders());
+        });
+        next();
+    });
 
     app.disable('x-powered-by');
     

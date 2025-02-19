@@ -6,8 +6,6 @@ const validatePassword = (password) => {
 };
 
 const userSchema = new Schema({
-    firstName: String,
-    lastName: String,
     username: { type: String, required: true, unique: true },
     password: {
         type: String,

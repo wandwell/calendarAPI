@@ -81,10 +81,11 @@ app.get('/', (req, res) => {
 
 app.post('/login', passport.authenticate('local', { failureFlash: false }), (req, res) => {
     req.session.user = req.user;
-    console.log("Session after login:", req.session);
+    console.log("User after login:", req.user); // Logging user object
+    console.log("Session after login:", req.session); // Logging session
 
     const responseData = {
-        userId: req.user._id.toString(), // Ensure correct property
+        userId: req.user._id.toString(),
         username: req.user.username,
         favorites: req.user.favorites,
         dislikes: req.user.dislikes

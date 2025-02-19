@@ -27,7 +27,7 @@ app
         secret: 'secret',
         resave: false,
         saveUninitialized: false, // Changed to false for better security
-        cookie: { secure: true, httpOnly: true, sameSite: 'none' }
+        cookie: { secure: true, httpOnly: true, sameSite: 'None' }
     }))
     .use(passport.initialize())
     .use(passport.session())

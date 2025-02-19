@@ -7,7 +7,7 @@ router.use('/users', require('./users'));
 
 router.use('/events', require('./events'));
 
-app.post('/login', (req, res, next) => {
+router.post('/login', (req, res, next) => {
     console.log("Login route hit with data:", req.body); // Add logging to confirm
     next();
 }, passport.authenticate('local', { failureFlash: false }), (req, res) => {

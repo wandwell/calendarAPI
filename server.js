@@ -26,7 +26,6 @@ app
         secret: 'secret',
         resave: false,
         saveUninitialized: true,
-        store: new MongoStore({ mongooseConnection: mongoose.connection }),
         cookie: { secure: false, httpOnly: true, sameSite: 'lax' }
     }))
     .use(passport.initialize())

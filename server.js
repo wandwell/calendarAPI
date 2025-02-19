@@ -32,6 +32,13 @@ app
     .use(passport.initialize())
     .use(passport.session())
 
+    app.use((req, res, next) => {
+    console.log("Incoming request:", req.method, req.url);
+    console.log("Request headers:", req.headers); // Log request headers
+    console.log("Session data:", req.session);
+    next();
+});
+
     .use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', 'https://ontheplate.netlify.app'); // No trailing slash
         res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');

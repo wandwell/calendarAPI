@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = 'your_jwt_secret_key';
 
-router.use('/', require('./swagger'));
 router.use('/users', require('./users'));
 router.use('/events', require('./events'));
 

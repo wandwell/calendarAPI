@@ -7,6 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const cors = require('cors');
 const { User } = require('./models/users');
 const bcrypt = require('bcryptjs');
+const MongoStore = require('connect-mongo');
 
 const app = express();
 
@@ -26,7 +27,10 @@ app
     .use(session({
         secret: 'secret',
         resave: false,
-        saveUninitialized: false, // Changed to false for better security
+        saveUninitialized: false,
+        store: MongoStore.create({
+            mongoUrl: process.env.MONGO_URI
+        }),
         cookie: { secure: true, httpOnly: true, sameSite: 'None' }
     }))
     .use(passport.initialize())
